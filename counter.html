@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Bacon counter</title>
+</head>
+
+<body>
+  <button id="minus">-</button> bacon<span id="sum-box"> x <span id="sum">0</span></span> <button id="plus">+</button>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/3.0.10/Bacon.js"></script>
+<script>
+  let $ = (selector) => document.querySelector(selector)
+
+  let plusE = Bacon.fromEvent($("#plus"), "click").map(1)
+  let minusE = Bacon.fromEvent($("#minus"), "click").map(-1)
+  let bothE = plusE.merge(minusE)
+
+  bothE.log()
+
+  let add = (x, y) => (x + y < 0) ? 0 : x + y
+  let counterP = bothE.scan(0, add)
+  counterP.onValue(sum => $("#sum").textContent = sum)
+
+  let hiddenIfZero = value => value < 1 ? "none" : "inline"
+  counterP.map(hiddenIfZero)
+    .onValue(visibility => { $("#sum-box").style.display = visibility })
+</script>
+
+</html>
