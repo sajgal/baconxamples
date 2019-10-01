@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Bacemon</title>
+</head>
+
+<body>
+  <div id="pokedex"></div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/3.0.10/Bacon.js"></script>
+<script>
+  const $ = (selector) => document.querySelector(selector)
+
+  const pokeImg = (pokemonNumber) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonNumber}.png`
+
+  const ajaxCall = fetch('https://pokeapi.co/api/v2/pokedex/1/')
+    .then((response) => response.json())
+    .catch((error) => console.error('parsing failed', error));
+
+  const createPokemonElement = (pokemon) => {
+    const pokemonElement = document.createElement("img");
+    pokemonElement.src = pokeImg(pokemon.entry_number)
+    pokemonElement.alt = pokemon.pokemon_species.name
+    pokemonElement.title = `[${pokemon.entry_number}] ${pokemon.pokemon_species.name}`
+
+    return pokemonElement
+  }
+
+  Bacon
+    .fromPromise(ajaxCall)
+    .map((pokemonApiResponse) => pokemonApiResponse.pokemon_entries)
+    .flatMap(Bacon.fromArray)
+    .map(createPokemonElement)
+    .log()
+    .onValue((pokemonElement) => $("#pokedex").appendChild(pokemonElement));
+</script>
+
+</html>
