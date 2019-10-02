@@ -35,8 +35,8 @@
     .fromPromise(ajaxCall)
     .map((pokemonApiResponse) => pokemonApiResponse.pokemon_entries)
     .flatMap(Bacon.fromArray)
-    .map(createPokemonElement)
     .log()
+    .map(createPokemonElement)
     .onValue((pokemonElement) => $("#pokedex").appendChild(pokemonElement));
 </script>
 

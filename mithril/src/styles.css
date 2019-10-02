@@ -1,0 +1,7 @@
+#box {
+  display: block;
+  height: 100px;
+  width: 100px;
+  border: 5px solid lightseagreen;
+  background-color: cadetblue;
+}
