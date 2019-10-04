@@ -9,9 +9,10 @@ const view = () => {
   return <div id="box">Box</div>
 }
 
-click
+const boxClick = click
   .filter(matches("#box"))
-  .map(() => "box clicked")
-  .log();
+  .map(1);
+
+export const totalClicks = boxClick.scan(0, (a, b) => a + b);
 
 export default Bacon.constant(view());
