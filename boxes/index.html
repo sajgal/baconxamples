@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <link rel="stylesheet" href="style.css">
+
+  <title>Functional reactive boxes with Bacon.js</title>
+</head>
+
+<body>
+  <div id="page">
+    <main>
+      <h1>Click the <span class="the-thing">boxes</span></h1>
+      <div id="secure-wrapper">
+        <div id="box-1" class="img-box"></div>
+        <div id="box-2" class="img-box"></div>
+        <div id="box-3" class="img-box"></div>
+      </div>
+    </main>
+    <footer><a href="https://github.com">Source code on GitHub</a></footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/1.0.1/Bacon.min.js"></script>
+  <script>
+    const $ = (selector) => document.querySelector(selector);
+    const color1 = 'hotpink';
+    const color2 = '#00A2B9';
+    const choices = [color1, color2];
+    const randomChoice = () => { return choices[Math.floor(Math.random() * choices.length)]; }
+    const returnOpositeChoice = (currentColor) => currentColor === color1 ? color2 : color1;
+    const setBackground = (id, color) => $(id).style = `background-color: ${color};`
+
+    // creates stream for box1, sets the initial color
+    // and when the box is clicked,
+    // sets the value of the property to the opposite what's now
+    const box1 = Bacon
+      .fromEvent($("#box-1"), "click")
+      .scan(randomChoice(), returnOpositeChoice);
+
+    const box2 = Bacon
+      .fromEvent($("#box-2"), "click")
+      .scan(randomChoice(), returnOpositeChoice);
+
+    const box3 = Bacon
+      .fromEvent($("#box-3"), "click")
+      .scan(randomChoice(), returnOpositeChoice);
+
+    const resultStream = Bacon
+      .onValues(box1, box2, box3, (color1, color2, color3) => {
+        // when the value changes, set the background color
+        setBackground('#box-1', color1);
+        setBackground('#box-2', color2);
+        setBackground('#box-3', color3);
+
+        // if all the colors match, set the border
+        if (color1 === color2 && color2 === color3) {
+          $('#secure-wrapper').style = `border: 3px dashed ${color1}`;
+        } else {
+          $('#secure-wrapper').style = `border: 3px solid transparent`;
+        }
+      })
+  </script>
+</body>
+
+</html>
